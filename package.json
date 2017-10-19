@@ -14,7 +14,7 @@
     "express": "*",
     "express-handlebars": "*",
     "express-session": "*",
-    "express-validator": "*",
+    "express-validator": "^4.2.1",
     "moment": "*",
     "multer": "*",
     "mysql": "^2.15.0"

@@ -1,30 +1,31 @@
 <h1>Add Project</h1>
+<h6 class="red">{{errors}}</h6>
 <form method="post" action="/admin/add" 
 enctype="multipart/form-data">
 <!--enctype attribute used for uploading images-->
     <div class="form-group">
         <label>Title</label>
-        <input type="text" class="form-control" name="title" placeholder="Title">
+        <input type="text" class="form-control" name="title" placeholder="Title" value="{{title}}">
     </div>
     <div class="form-group">
         <label>Service</label>
-        <input type="text" class="form-control" name="service" placeholder="Service">
+        <input type="text" class="form-control" name="service" placeholder="Service" value="{{service}}">
     </div>
     <div class="form-group">
         <label>Client</label>
-        <input type="text" class="form-control" name="client" placeholder="Client">
+        <input type="text" class="form-control" name="client" placeholder="Client" value="{{client}}">
     </div>
     <div class="form-group">
         <label>Description</label>
-        <textarea class="form-control" name="description"></textarea>
+        <textarea class="form-control" name="description" placeholder="Description">{{description}}</textarea> 
     </div>
     <div class="form-group">
         <label>Project URL</label>
-        <input type="text" class="form-control" name="url" placeholder="Project URL">
+        <input type="text" class="form-control" name="url" placeholder="Project URL" value="{{url}}">
     </div>
     <div class="form-group">
         <label>Project Date</label>
-        <input type="date" class="form-control" name="projectdate">
+        <input type="date" class="form-control" name="projectdate" value="{{date}}">
     </div>
     <div class="form-group">
         <label>Image</label>

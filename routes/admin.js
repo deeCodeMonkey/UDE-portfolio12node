@@ -4,7 +4,6 @@ var multer = require('multer');
 var upload = multer({ dest: './public/images/portfolio' });
 var mysql = require('mysql');
 
-
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -25,18 +24,11 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/add', function (req, res, next) {
-    res.render('admin/add')
+    res.render('admin/add');
 });
 
 //enter details for new project
 router.post('/add', upload.single('projectimage'), function (req, res, next) {
-    // Get Form Values
-    var title = req.body.title;
-    var description = req.body.description;
-    var service = req.body.service;
-    var url = req.body.url;
-    var client = req.body.client;
-    var projectdate = req.body.projectdate;
 
     // Check Image Upload
     if (req.file) {
@@ -45,55 +37,45 @@ router.post('/add', upload.single('projectimage'), function (req, res, next) {
         var projectImageName = 'noimage.jpg';
     }
 
-    //////data vaildation logic was rejected !!!!!!!!!
-    // Form Field Validation
-    //req.checkBody('title', 'Title field is required').notEmpty();
-    //req.checkBody('service', 'Service field is required').notEmpty();
-
-    //var errors = req.validationErrors();
-
-    //if (errors) {
-    //    res.render('admin/add', {
-    //        errors: errors,
-    //        title: title,
-    //        description: description,
-    //        service: service,
-    //        client: client,
-    //        url: url
-    //    });
-    //} else {
-    //    var project = {
-    //        title: title,
-    //        description: description,
-    //        service: service,
-    //        client: client,
-    //        date: projectdate,
-    //        url: url,
-    //        image: projectImageName
-    //    };
-    //}
-
     var project = {
-        title: title,
-        description: description,
-        service: service,
-        client: client,
-        date: projectdate,
-        url: url,
+        title: req.body.title,
+        description: req.body.description,
+        service: req.body.service,
+        client: req.body.client,
+        date: req.body.projectdate,
+        url: req.body.url,
         image: projectImageName
     };
 
-    var query = connection.query('INSERT INTO projects SET ?', project, function (err, result) {
-        if (err){
-            console.log('Error: ' + err);
-        } else {
-            console.log('Success: ' + result);
-        }
-    });
+    //validation rules
+    req.checkBody('title', 'Title field is required').notEmpty();
+    req.checkBody('service', 'Service field is required').notEmpty();
 
+    var errors = req.validationErrors();
+    if (errors) {
+
+        res.render('admin/add', {
+            errors: errors[0].msg,
+            title: req.body.title,
+            description: req.body.description,
+            service: req.body.service,
+            client: req.body.client,
+            url: req.body.url,
+            date: req.body.projectdate
+        });
+    } else {
+        var query = connection.query('INSERT INTO projects SET ?', project, function (err, result) {
+            if (err) {
+                console.log('Error: ' + err);
+            } else {
+                console.log('Success: ' + result);
+            }
+        });
     //req.flash('success_msg', 'Project Added');
+        res.redirect('/admin');
+    }
 
-    res.redirect('/admin');
+    
 });
 
 //show form with values for editing
@@ -101,9 +83,13 @@ router.get('/edit/:id', function (req, res, next) {
     //id= looking for specific project
     connection.query('SELECT * FROM projects WHERE id = ?', req.params.id, (err, rows, fields) => {
         if (err) throw err;
+
+        var data = rows[0];
+        data.date = new Date(data.date).toISOString().slice(0, 10);
+
         res.render('admin/edit', {
             //getting back one row, needs to be singular 'project'
-            'project': rows[0]
+            'project': data
         });
     });
 });
@@ -111,31 +97,20 @@ router.get('/edit/:id', function (req, res, next) {
 //update with edits to project detail
 router.post('/edit/:id', upload.single('projectimage'), function (req, res, next) {
     // Get Form Values
-    var title = req.body.title;
-    var description = req.body.description;
-    var service = req.body.service;
-    var url = req.body.url;
-    var client = req.body.client;
-    var projectdate = req.body.projectdate;
-
+    var project = {
+        title: req.body.title,
+        description: req.body.description,
+        service: req.body.service,
+        client: req.body.client,
+        date: req.body.projectdate,
+        url: req.body.url,
+    };
     // Check Image Upload
     if (req.file) {
-        var projectImageName = req.file.filename
-    } else {
-        var projectImageName = 'noimage.jpg';
+        project.image = req.file.filename
     }
 
-    var project = {
-        title: title,
-        description: description,
-        service: service,
-        client: client,
-        date: projectdate,
-        url: url,
-        image: projectImageName
-    };
-
-    var query = connection.query('UPDATE projects SET ? WHERE id = '+ req.params.id, project, function (err, result) {
+    var query = connection.query('UPDATE projects SET ? WHERE id = ' + req.params.id, project, function (err, result) {
         if (err) {
             console.log('Error: ' + err);
         } else {

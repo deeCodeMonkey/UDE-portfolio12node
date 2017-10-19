@@ -11,11 +11,6 @@ var upload = multer({ dest: './public/images/portfolio' });
 
 var app = express();
 
-// Route Files
-var routes = require('./routes/index');
-var admin = require('./routes/admin');
-app.use('/', routes);
-app.use('/admin', admin);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -27,6 +22,7 @@ app.set('view engine', 'handlebars');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
 //Middleware, handle sessions
 app.use(session({
     secret: 'secret',
@@ -37,7 +33,7 @@ app.use(session({
 // Flash Middleware
 app.use(flash());
 
-// Validator Middleware
+//// Validator Middleware
 app.use(expressValidator({
   errorFormatter: function(param, msg, value) {
       var namespace = param.split('.')
@@ -55,6 +51,11 @@ app.use(expressValidator({
   }
 }));
 
+// Route Files
+var routes = require('./routes/index');
+var admin = require('./routes/admin');
+app.use('/', routes);
+app.use('/admin', admin);
 
 app.listen(3000, function(){
 	console.log('Server started');
